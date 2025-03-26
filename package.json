@@ -1,0 +1,83 @@
+{
+  "name": "electroninv",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "gen:prisma:remote": "move .\\prisma\\migrations-psql .\\prisma\\migrations && prisma migrate dev --name dev --schema=.\\prisma\\schema2.prisma && move .\\prisma\\migrations .\\prisma\\migrations-psql",
+    "gen:prisma:local": "move .\\prisma\\migrations-sqlite .\\prisma\\migrations && prisma migrate dev --name dev --schema=.\\prisma\\schema.prisma && move .\\prisma\\migrations .\\prisma\\migrations-sqlite",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "build": {
+    "appId": "com.electroninv.app",
+    "productName": "श्री जी सेवा संस्थान इन्वेंटरी",
+    "icon": "./icon.png",
+    "asar": false,
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "backend/**/*",
+      "prisma/**/*",
+      "main.js",
+      "dev.db",
+      "package.json",
+      "node_modules/@prisma/**/*"
+    ],
+    "asarUnpack": [
+      "backend/**/*",
+      "prisma/**/*",
+      "dev.db"
+    ],
+    "extraResources": [
+      {
+        "from": "backend/",
+        "to": "backend/"
+      }
+    ],
+    "win": {
+      "signAndEditExecutable": false
+    }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@prisma/client": "^6.2.1",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "cron": "^3.5.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "json2csv": "6.0.0-alpha.2",
+    "jsonwebtoken": "^9.0.2",
+    "kit": "^0.1.2",
+    "knex": "^3.1.0",
+    "nodemailer": "^6.10.0",
+    "pdf": "^0.1.0",
+    "pdfkit": "^0.16.0",
+    "pg": "^8.13.3",
+    "pouchdb": "^9.0.0",
+    "prisma": "^6.2.1",
+    "puppeteer": "^21.7.0",
+    "sqlite3": "^5.1.7",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "electron": "^34.0.1",
+    "electron-builder": "^25.1.8",
+    "electron-reload": "2.0.0-alpha.1"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "bcrypt",
+      "electron",
+      "prisma",
+      "sqlite3"
+    ]
+  }
+}

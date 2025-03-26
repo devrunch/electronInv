@@ -1,0 +1,11 @@
+const express = require('express');
+const router = express.Router();
+const PatientController = require('../controllers/PatientController');
+const { authenticateToken } = require('../middlewares/authMiddleware');
+router.get('/', authenticateToken,PatientController.getAllPatients);
+router.post('/', authenticateToken,PatientController.createPatient);
+router.get('/search', authenticateToken,PatientController.quickSearch);
+router.get('/:id', authenticateToken,PatientController.getPatientById);
+router.put('/:id', authenticateToken,PatientController.updatePatient);
+router.delete('/:id', authenticateToken,PatientController.deletePatient);
+module.exports = router;
