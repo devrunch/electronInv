@@ -31,8 +31,11 @@ if (!fs.existsSync(uploadsPath)) {
     fs.mkdirSync(uploadsPath, { recursive: true });
 }
 
-// Serve static files
+// Serve static files from uploads directory
 app.use('/static', express.static(path.join(__dirname, '../uploads')));
+
+// Serve static files from the React build directory
+app.use(express.static(path.join(__dirname, 'dist-react')));
 
 // Add a specific route for PDF downloads
 app.get('/download/pdf/:filename', (req, res) => {
@@ -51,9 +54,7 @@ app.get('/download/pdf/:filename', (req, res) => {
 //file should be pdf and available at http://localhost:3000/uploads/pdf/test.pdf
 const PORT = process.env.PORT || 3000;
 
-// app.use(express.static(path.join(__dirname, 'dist')));
-
-// Routes
+// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/inventory', inventoryRoutes);
@@ -74,9 +75,17 @@ app.get('/api/sync', async (req, res) => {
   }
 });
 
-
+// Serve React app for any other routes (handle client-side routing)
+app.get('*', (req, res) => {
+  // Don't serve React app for API routes
+  if (req.url.startsWith('/api/')) {
+    return res.status(404).json({ error: 'API endpoint not found' });
+  }
+  res.sendFile(path.join(__dirname, 'dist-react', 'index.html'));
+});
 
 // Start server
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
+    console.log(`React app is served at http://localhost:${PORT}`);
 });
