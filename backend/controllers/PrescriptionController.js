@@ -137,9 +137,9 @@ class PrescriptionController {
     }
 
     static async sendPrescriptionWhatsapp(req, res) {
-        const { prescriptionId } = req.params;
+        const { id } = req.params;
         const prescription = await prisma.prescription.findUnique({
-            where: { prescriptionID: prescriptionId },
+            where: { id: parseInt(id) },
         });
         if (!prescription) {
             return res.status(404).json({ error: 'Prescription not found' });
@@ -227,22 +227,27 @@ class PrescriptionController {
     }
 
     static async sendPrescriptionEmail(req, res) {
+        const { id } = req.params;
         try {
-            const { email, pdfBuffer } = req.body;
-
-            if (!pdfBuffer) {
-                return res.status(400).json({ error: 'No PDF buffer provided' });
+            const prescription = await prisma.prescription.findUnique({
+                where: { id: parseInt(id) },
+                include: {
+                    patient: true,
+                },
+            });
+            if (!prescription) {
+                return res.status(404).json({ error: 'Prescription not found' });
             }
+            const { email } = req.body;
 
             if (!email) {
                 return res.status(400).json({ error: 'No email address provided' });
             }
 
-      
+            // Get the PDF buffer from the saved file
+            const filePath = `uploads/pdf/prescription_${prescription.patient.firstName}_${prescription.prescriptionID}.pdf`;
+            const buffer = await fs.promises.readFile(filePath);
 
-
-            // Convert base64 to buffer if needed
-            const buffer = Buffer.from(pdfBuffer, 'base64');
 
             // Email content
             const mailOptions = {
