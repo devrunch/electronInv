@@ -13,7 +13,7 @@ module.exports = {
   },
 
   async createInventory(req, res) {
-    let { sku, name, quantity, supplierId, lowerThreshold, upperThreshold ,price} = req.body;
+    let { sku, name, quantity, lowerThreshold, upperThreshold, price } = req.body;
     if (!sku || !name || !quantity) {
       return res.status(400).json({ error: 'All fields are required' });
     }
@@ -42,7 +42,7 @@ module.exports = {
           inventoryId: newItem.sku,
           quantity,
           type: 'CREATE',
-          userId:req.user.username,
+          userId: req.user.username,
         },
       });
 
@@ -55,7 +55,7 @@ module.exports = {
 
   async updateInventory(req, res) {
     const { id } = req.params;
-    let { name, quantity, lowerThreshold, upperThreshold,price } = req.body;
+    let { name, quantity, lowerThreshold, upperThreshold, price } = req.body;
     if (!quantity) {
       return res.status(400).json({ error: 'Quantity is required' });
     }
@@ -63,15 +63,16 @@ module.exports = {
     quantity = parseInt(quantity);
     lowerThreshold = parseInt(lowerThreshold);
     upperThreshold = parseInt(upperThreshold);
+    price = parseFloat(price);
 
-    if ( typeof quantity !== 'number') {
+    if (typeof quantity !== 'number') {
       return res.status(400).json({ error: 'Invalid input' });
     }
 
     try {
       const updatedItem = await prisma.inventory.update({
-        where: { sku: (id) },
-        data: { name, quantity, lowerThreshold, upperThreshold, price:parseInt(price) },
+        where: { sku: id },
+        data: { name, quantity, lowerThreshold, upperThreshold, price },
       });
 
       await prisma.inventoryLog.create({
@@ -79,10 +80,9 @@ module.exports = {
           inventoryId: updatedItem.sku,
           quantity,
           type: 'UPDATE',
-          userId:req.user.username,
+          userId: req.user.username,
         },
       });
-      
 
       res.json(updatedItem);
     } catch (err) {
@@ -112,7 +112,7 @@ module.exports = {
           },
         },
       });
-      const fields = ['id', 'sku', 'name', 'quantity', 'supplierId', 'lowerThreshold', 'upperThreshold'];
+      const fields = ['id', 'sku', 'name', 'quantity', 'lowerThreshold', 'upperThreshold', 'price'];
       const json2csvParser = new Parser({ fields });
       const csv = json2csvParser.parse(inventory);
 
@@ -123,10 +123,11 @@ module.exports = {
       res.status(500).json({ error: 'Server error' });
     }
   },
+
   async exportInventoryToCSV(req, res) {
     try {
       const inventory = await prisma.inventory.findMany();
-      const fields = ['id', 'sku', 'name', 'quantity', 'supplierId', 'lowerThreshold', 'upperThreshold'];
+      const fields = ['id', 'sku', 'name', 'quantity', 'lowerThreshold', 'upperThreshold', 'price'];
       const json2csvParser = new Parser({ fields });
       const csv = json2csvParser.parse(inventory);
 
@@ -137,6 +138,7 @@ module.exports = {
       res.status(500).json({ error: 'Server error' });
     }
   },
+
   async quickSearch(req, res) {
     try {
       const { q } = req.query;
