@@ -34,7 +34,7 @@ module.exports = {
 
     try {
       const newItem = await prisma.inventory.create({
-        data: { sku, name, quantity, supplier: { connect: { id: 1 } }, lowerThreshold, upperThreshold, price },
+        data: { sku, name, quantity, lowerThreshold, upperThreshold, price },
       });
 
       await prisma.inventoryLog.create({

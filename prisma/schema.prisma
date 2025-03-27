@@ -34,10 +34,8 @@ model Inventory {
   lowerThreshold Int      @default(5) // Prevents stock running too low
   upperThreshold Int      @default(100) // Prevents overstocking
   lastUpdated    DateTime @updatedAt // Auto-updates on change
-  supplierId     Int?
   price          Float    @default(0)
 
-  supplier      Supplier?      @relation(fields: [supplierId], references: [id], onDelete: Cascade)
   dosages       Dosage[]
   inventoryLogs InventoryLog[]
   PurchaseItem  PurchaseItem[]
@@ -107,7 +105,6 @@ model Supplier {
   email     String      @unique
   address   String
   createdAt DateTime    @default(now())
-  inventory Inventory[]
   Purchase  Purchase[]
 }
 
