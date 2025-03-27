@@ -145,8 +145,8 @@ module.exports = {
       const inventory = await prisma.inventory.findMany({
         where: {
           OR: [
-            { sku: { contains: q } },
-            { name: { contains: q } }
+            { sku: { contains: q, mode: 'insensitive' } },
+            { name: { contains: q, mode: 'insensitive' } }
           ],
         },
       });
