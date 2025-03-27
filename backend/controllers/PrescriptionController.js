@@ -1,6 +1,8 @@
 const { PrismaClient } = require('../../prisma/generated/local');
-const generatePrescriptionPDF = require('../utils/PrescriptionGenerator');
 const nodemailer = require('nodemailer');
+const { savePdfToUploads } = require('../utils/htmlToPdf');
+const { getPrecriptionHtml, PdfGenerator } = require('../utils/prescriptionHTML');
+const { sendPrescriptionViaWhatsapp } = require('../utils/prescriptionSender');
 const prisma = new PrismaClient();
 
 // Email configuration
@@ -74,7 +76,7 @@ class PrescriptionController {
             }
         }
         try {
-            const newPrescription = await prisma.prescription.create({
+            let newPrescription = await prisma.prescription.create({
                 data: {
                     patientId,
                     startDate: new Date(startDate),
@@ -83,6 +85,18 @@ class PrescriptionController {
                     disease,
                     dosages: {
                         create: sanitizedDosages,
+                    },
+                },
+            });
+
+            newPrescription = await prisma.prescription.findUnique({
+                where: { id: newPrescription.id },
+                include: {
+                    patient: true,
+                    dosages: {
+                        include: {
+                            inventory: true,
+                        },
                     },
                 },
             });
@@ -110,11 +124,31 @@ class PrescriptionController {
                 });
             }
 
+            await PdfGenerator(newPrescription,`prescription_${newPrescription.patient.firstName}_${newPrescription.prescriptionID}.pdf`)
+            await sendPrescriptionViaWhatsapp(
+                newPrescription.patient.contactInfo,
+                [newPrescription.patient.firstName],
+                `https://aditya.outlfy.com/static/pdf/prescription_${newPrescription.patient.firstName}_${newPrescription.prescriptionID}.pdf`)
             res.status(201).json(newPrescription);
         } catch (error) {
             console.log(error);
             res.status(500).json({ error: 'Failed to create prescription' });
         }
+    }
+
+    static async sendPrescriptionWhatsapp(req, res) {
+        const { prescriptionId } = req.params;
+        const prescription = await prisma.prescription.findUnique({
+            where: { prescriptionID: prescriptionId },
+        });
+        if (!prescription) {
+            return res.status(404).json({ error: 'Prescription not found' });
+        }
+        await sendPrescriptionViaWhatsapp(
+            prescription.patient.contactInfo,
+            [prescription.patient.firstName],
+            `https://aditya.outlfy.com/static/pdf/prescription_${prescription.patient.firstName}_${prescription.prescriptionID}.pdf`)
+        res.status(200).json({ message: 'Prescription sent successfully' });
     }
 
     static async updatePrescription(req, res) {
@@ -153,33 +187,7 @@ class PrescriptionController {
             res.status(500).json({ error: 'Failed to delete prescription' });
         }
     }
-    static async generatePDF(req, res) {
-        const { id } = req.params;
-        try {
-            const prescription = await prisma.prescription.findUnique({
-                where: { id: parseInt(id) },
-                include: {
-                    patient: true,
-                    dosages: {
-                        select: {
-                            sku: true,
-                            frequency: true,
-                        },
-                    },
-                },
-            });
-            if (!prescription) {
-                return res.status(404).json({ error: 'Prescription not found' });
-            }
-            const pdfBuffer = await generatePrescriptionPDF(prescription.id);
-            res.setHeader('Content-Type', 'application/pdf');
-            res.setHeader('Content-Disposition', `attachment; filename=prescription_${id}.pdf`);
-            res.send(pdfBuffer);
-        } catch (error) {
-            console.log(error);
-            res.status(500).json({ error: 'Failed to generate prescription PDF' });
-        }
-    }
+
 
     static async revokePrescription(req, res) {
         const { id } = req.params;

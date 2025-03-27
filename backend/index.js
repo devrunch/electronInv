@@ -11,6 +11,7 @@ const logRoutes = require('./routes/logRoutes');
 const userRoutes = require('./routes/userRoutes');
 const syncService = require('./syncService');
 const path = require('path');
+const fs = require('fs');
 dotenv.config();
 const app = express();
 
@@ -24,9 +25,33 @@ app.use(cors({
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
+// Create uploads directory if it doesn't exist
+const uploadsPath = path.join(__dirname, '../uploads/pdf');
+if (!fs.existsSync(uploadsPath)) {
+    fs.mkdirSync(uploadsPath, { recursive: true });
+}
+
+// Serve static files
+app.use('/static', express.static(path.join(__dirname, '../uploads')));
+
+// Add a specific route for PDF downloads
+app.get('/download/pdf/:filename', (req, res) => {
+    const filename = req.params.filename;
+    const filePath = path.join(__dirname, '../uploads/pdf', filename);
+    
+    // Check if file exists
+    if (fs.existsSync(filePath)) {
+        res.download(filePath); // This sets the appropriate headers for download
+    } else {
+        res.status(404).send('File not found');
+    }
+});
+
+// url should be http://localhost:3000/uploads/pdf/
+//file should be pdf and available at http://localhost:3000/uploads/pdf/test.pdf
 const PORT = process.env.PORT || 3000;
 
-app.use(express.static(path.join(__dirname, 'dist')));
+// app.use(express.static(path.join(__dirname, 'dist')));
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -49,9 +74,7 @@ app.get('/api/sync', async (req, res) => {
   }
 });
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-});
+
 
 // Start server
 app.listen(PORT, () => {

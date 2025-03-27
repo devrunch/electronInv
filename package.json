@@ -51,6 +51,8 @@
     "cron": "^3.5.0",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "html-pdf": "^3.0.1",
+    "html-pdf-node": "^1.0.8",
     "json2csv": "6.0.0-alpha.2",
     "jsonwebtoken": "^9.0.2",
     "kit": "^0.1.2",
