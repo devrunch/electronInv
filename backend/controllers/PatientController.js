@@ -98,12 +98,13 @@ module.exports = {
   async quickSearch(req, res) {
    try{
     const {q} = req.query;
+    const searchTerm = q.toLowerCase();
     const patients = await prisma.patient.findMany({
       where: {
         OR: [
-          { firstName: { contains: q } },
-          { lastName: { contains: q } },
-          { contactInfo: { contains: q } },
+          { firstName: { contains: searchTerm, mode: 'insensitive' } },
+          { lastName: { contains: searchTerm, mode: 'insensitive' } },
+          { contactInfo: { contains: searchTerm, mode: 'insensitive' } },
         ],
       },
     });

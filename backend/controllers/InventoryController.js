@@ -142,11 +142,13 @@ module.exports = {
   async quickSearch(req, res) {
     try {
       const { q } = req.query;
+      const searchTerm = q.toLowerCase();
+      console.log(searchTerm)
       const inventory = await prisma.inventory.findMany({
         where: {
           OR: [
-            { sku: { contains: q, mode: 'insensitive' } },
-            { name: { contains: q, mode: 'insensitive' } }
+            { sku: { contains: searchTerm, mode: 'insensitive' } },
+            { name: { contains: searchTerm, mode: 'insensitive' } }
           ],
         },
       });
