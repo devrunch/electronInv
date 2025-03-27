@@ -67,7 +67,7 @@ exports.addPurchase = async (req, res) => {
 
         for (let item of purchaseItems) {
             await prisma.inventory.update({
-                where: { id: item.inventoryId },
+                where: { sku: item.inventoryId },
                 data: {
                     quantity: { increment: item.quantity }
                 }
