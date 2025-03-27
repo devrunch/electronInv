@@ -104,7 +104,7 @@ async function PdfGenerator(prescription,fileName) {
           <body>
             <div class="container">
               <div class="header">
-               <img src="https://aditya.outlfy.com/header.png" alt="logo" style="width: 100%;">
+               <img src="https://aditya.outlfy.com/static/images/header.png" alt="logo" style="width: 100%;">
               </div>
 
               <div class="content">
@@ -124,7 +124,7 @@ async function PdfGenerator(prescription,fileName) {
 
                 <h2 style="margin-top: 20px;">नुस्खा (Prescription)</h2>
                 <div style="display: flex; justify-content: space-between;">
-                <img src="https://aditya.outlfy.com/pres.jpg"  width="250px">
+                <img src="https://aditya.outlfy.com/static/images/pres.jpg"  width="250px">
                 <table class="table">
                   <thead>
                     <tr>
