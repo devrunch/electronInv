@@ -4,7 +4,7 @@ const { savePdfToUploads } = require('../utils/htmlToPdf');
 const { getPrecriptionHtml, PdfGenerator } = require('../utils/prescriptionHTML');
 const { sendPrescriptionViaWhatsapp } = require('../utils/prescriptionSender');
 const prisma = new PrismaClient();
-
+const fs = require('fs');
 // Email configuration
 const transporter = nodemailer.createTransport({
     host: 'smtp.hostinger.com', // Replace with your SMTP server
