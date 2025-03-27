@@ -1,4 +1,4 @@
-const { PrismaClient } = require('../prisma/generated/local');
+const { PrismaClient } = require('../prisma/generated/remote');
 const { PrismaClient: RemotePrismaClient } = require('../prisma/generated/remote');
 
 const localPrisma = new PrismaClient();

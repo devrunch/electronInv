@@ -6,12 +6,13 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "./generated/local"
+  output = "./generated/remote"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:dev.db"
+  provider = "postgresql"
+  url      =  "postgresql://postgres:root@52.66.255.221:5432/srijiinventory"
+
 }
 
 model User {
@@ -19,6 +20,7 @@ model User {
   username  String   @unique
   password  String
   role      String // "admin" or "employee"
+  email     String?   @unique
   createdAt DateTime @default(now())
 
   inventoryLogs InventoryLog[]
@@ -60,9 +62,8 @@ model Patient {
   dob              DateTime
   gender           Gender
   contactInfo      String   @unique
-  emergencyContact String 
+  emergencyContact String
   createdAt        DateTime @default(now())
-  
 
   medicalHistories MedicalHistory[]
   prescriptions    Prescription[]

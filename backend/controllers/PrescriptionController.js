@@ -1,4 +1,4 @@
-const { PrismaClient } = require('../../prisma/generated/local');
+const { PrismaClient } = require('../../prisma/generated/remote');
 const nodemailer = require('nodemailer');
 const { savePdfToUploads } = require('../utils/htmlToPdf');
 const { getPrecriptionHtml, PdfGenerator } = require('../utils/prescriptionHTML');
