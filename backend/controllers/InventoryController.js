@@ -30,7 +30,7 @@ module.exports = {
     quantity = parseInt(quantity);
     lowerThreshold = parseInt(lowerThreshold);
     upperThreshold = parseInt(upperThreshold);
-
+    price = parseFloat(price);
 
     try {
       const newItem = await prisma.inventory.create({
