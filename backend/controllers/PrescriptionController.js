@@ -140,6 +140,9 @@ class PrescriptionController {
         const { id } = req.params;
         const prescription = await prisma.prescription.findUnique({
             where: { id: parseInt(id) },
+            include: {
+                patient: true,
+            },
         });
         if (!prescription) {
             return res.status(404).json({ error: 'Prescription not found' });
