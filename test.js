@@ -7,7 +7,7 @@ ImageGenerator({
         dob: '1990-01-01',
         contactInfo: '1234567890',
     },
-    disease: 'Fever',
+    disease: 'Fever, Cold, Cough',
     dosages: [
         {
             inventory: {
