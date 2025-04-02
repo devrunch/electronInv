@@ -27,8 +27,12 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Create uploads directory if it doesn't exist
 const uploadsPath = path.join(__dirname, '../uploads/pdf');
+const imagesPath = path.join(__dirname, '../uploads/images');
 if (!fs.existsSync(uploadsPath)) {
     fs.mkdirSync(uploadsPath, { recursive: true });
+}
+if (!fs.existsSync(imagesPath)) {
+    fs.mkdirSync(imagesPath, { recursive: true });
 }
 
 // Serve static files from uploads directory
@@ -47,6 +51,19 @@ app.get('/download/pdf/:filename', (req, res) => {
         res.download(filePath); // This sets the appropriate headers for download
     } else {
         res.status(404).send('File not found');
+    }
+});
+
+// Add a specific route for image downloads
+app.get('/download/image/:filename', (req, res) => {
+    const filename = req.params.filename;
+    const filePath = path.join(__dirname, '../uploads/images', filename);
+    
+    // Check if file exists
+    if (fs.existsSync(filePath)) {
+        res.download(filePath); // This sets the appropriate headers for download
+    } else {
+        res.status(404).send('Image not found');
     }
 });
 

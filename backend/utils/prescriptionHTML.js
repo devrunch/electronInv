@@ -1,6 +1,6 @@
-const { savePdfToUploads } = require('./htmlToPdf');
+const { saveImageToUploads } = require('./htmlToImage');
 
-async function PdfGenerator(prescription,fileName) {
+async function ImageGenerator(prescription, fileName) {
    
      const html = `
         <html>
@@ -76,20 +76,23 @@ async function PdfGenerator(prescription,fileName) {
     `;
 
     try {
-        console.log('Starting PDF generation...');
+        console.log('Starting image generation...');
         
-        // Save the PDF
-        const pdfPath = await savePdfToUploads(html, fileName);
+        // Change the file extension from .pdf to .png
+        const imageFileName = fileName.replace('.pdf', '.png');
         
-        console.log('✅ PDF generated successfully!');
-        console.log(`Saved to: ${pdfPath}`);
+        // Save the image
+        const imagePath = await saveImageToUploads(html, imageFileName);
         
-        return { success: true, path: pdfPath };
+        console.log('✅ Image generated successfully!');
+        console.log(`Saved to: ${imagePath}`);
+        
+        return { success: true, path: imagePath };
     } catch (error) {
-        console.error('❌ Error generating PDF:', error);
+        console.error('❌ Error generating image:', error);
         return { success: false, error };
     }
 }
 
-// Run the test
-module.exports = { PdfGenerator  };
+// Export the new function
+module.exports = { ImageGenerator };

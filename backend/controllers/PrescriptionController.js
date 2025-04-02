@@ -1,7 +1,6 @@
 const { PrismaClient } = require('../../prisma/generated/remote');
 const nodemailer = require('nodemailer');
-const { savePdfToUploads } = require('../utils/htmlToPdf');
-const { getPrecriptionHtml, PdfGenerator } = require('../utils/prescriptionHTML');
+const { ImageGenerator } = require('../utils/prescriptionHTML');
 const { sendPrescriptionViaWhatsapp } = require('../utils/prescriptionSender');
 const prisma = new PrismaClient();
 const fs = require('fs');
@@ -123,11 +122,13 @@ class PrescriptionController {
                 });
             }
 
-            await PdfGenerator(newPrescription,`prescription_${newPrescription.patient.firstName}_${newPrescription.prescriptionID}.pdf`)
+            // Changed from PdfGenerator to ImageGenerator and .pdf to .png
+            const imageFileName = `prescription_${newPrescription.patient.firstName}_${newPrescription.prescriptionID}.png`;
+            await ImageGenerator(newPrescription, imageFileName);
             await sendPrescriptionViaWhatsapp(
                 newPrescription.patient.contactInfo,
                 [newPrescription.patient.firstName],
-                `https://aditya.outlfy.com/static/pdf/prescription_${newPrescription.patient.firstName}_${newPrescription.prescriptionID}.pdf`)
+                `https://aditya.outlfy.com/static/images/prescription_${newPrescription.patient.firstName}_${newPrescription.prescriptionID}.png`)
             res.status(201).json(newPrescription);
         } catch (error) {
             console.log(error);
@@ -149,7 +150,7 @@ class PrescriptionController {
         await sendPrescriptionViaWhatsapp(
             prescription.patient.contactInfo,
             [prescription.patient.firstName],
-            `https://aditya.outlfy.com/static/pdf/prescription_${prescription.patient.firstName}_${prescription.prescriptionID}.pdf`)
+            `https://aditya.outlfy.com/static/images/prescription_${prescription.patient.firstName}_${prescription.prescriptionID}.png`)
         res.status(200).json({ message: 'Prescription sent successfully' });
     }
 
@@ -245,8 +246,8 @@ class PrescriptionController {
                 return res.status(400).json({ error: 'No email address provided' });
             }
 
-            // Get the PDF buffer from the saved file
-            const filePath = `uploads/pdf/prescription_${prescription.patient.firstName}_${prescription.prescriptionID}.pdf`;
+            // Get the image buffer from the saved file
+            const filePath = `uploads/images/prescription_${prescription.patient.firstName}_${prescription.prescriptionID}.png`;
             const buffer = await fs.promises.readFile(filePath);
 
 
@@ -260,7 +261,7 @@ class PrescriptionController {
                     <p>Please find your prescription attached to this email.</p>
                 `,
                 attachments: [{
-                    filename: `prescription_${new Date().toLocaleDateString()}.pdf`,
+                    filename: `prescription_${new Date().toLocaleDateString()}.png`,
                     content: buffer
                 }]
             };
