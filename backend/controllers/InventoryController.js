@@ -13,7 +13,7 @@ module.exports = {
   },
 
   async createInventory(req, res) {
-    let { sku, name, quantity, lowerThreshold, upperThreshold, price } = req.body;
+    let { sku, name, quantity, lowerThreshold, upperThreshold, price, directions } = req.body;
     if (!sku || !name || !quantity) {
       return res.status(400).json({ error: 'All fields are required' });
     }
@@ -34,7 +34,7 @@ module.exports = {
 
     try {
       const newItem = await prisma.inventory.create({
-        data: { sku, name, quantity, lowerThreshold, upperThreshold, price },
+        data: { sku, name, quantity, lowerThreshold, upperThreshold, price, directions },
       });
 
       await prisma.inventoryLog.create({
@@ -55,7 +55,7 @@ module.exports = {
 
   async updateInventory(req, res) {
     const { id } = req.params;
-    let { name, quantity, lowerThreshold, upperThreshold, price } = req.body;
+    let { name, quantity, lowerThreshold, upperThreshold, price, directions } = req.body;
     if (!quantity) {
       return res.status(400).json({ error: 'Quantity is required' });
     }
@@ -72,7 +72,7 @@ module.exports = {
     try {
       const updatedItem = await prisma.inventory.update({
         where: { sku: id },
-        data: { name, quantity, lowerThreshold, upperThreshold, price },
+        data: { name, quantity, lowerThreshold, upperThreshold, price, directions },
       });
 
       await prisma.inventoryLog.create({
@@ -112,7 +112,7 @@ module.exports = {
           },
         },
       });
-      const fields = ['id', 'sku', 'name', 'quantity', 'lowerThreshold', 'upperThreshold', 'price'];
+      const fields = ['id', 'sku', 'name', 'quantity', 'lowerThreshold', 'upperThreshold', 'price', 'directions'];
       const json2csvParser = new Parser({ fields });
       const csv = json2csvParser.parse(inventory);
 
@@ -127,7 +127,7 @@ module.exports = {
   async exportInventoryToCSV(req, res) {
     try {
       const inventory = await prisma.inventory.findMany();
-      const fields = ['id', 'sku', 'name', 'quantity', 'lowerThreshold', 'upperThreshold', 'price'];
+      const fields = ['id', 'sku', 'name', 'quantity', 'lowerThreshold', 'upperThreshold', 'price', 'directions'];
       const json2csvParser = new Parser({ fields });
       const csv = json2csvParser.parse(inventory);
 

@@ -42,7 +42,6 @@ class PrescriptionController {
                     dosages: {
                         select: {
                             sku: true,
-                            frequency: true,
                             quantity: true,
                             inventory: true,
                         },
@@ -156,13 +155,12 @@ class PrescriptionController {
 
     static async updatePrescription(req, res) {
         const { id } = req.params;
-        const { dosage, frequency, startDate, endDate, doctor } = req.body;
+        const { dosage, startDate, endDate, doctor } = req.body;
         console.log(dosage);
         try {
             const updatedPrescription = await prisma.prescription.update({
                 where: { id: parseInt(id) },
                 data: {
-                    frequency,
                     startDate: new Date(startDate),
                     endDate: new Date(endDate),
                     doctor,

@@ -102,8 +102,7 @@ async function syncPatientsToRemote() {
                         dosages: {
                             create: prescription.dosages.map(dosage => ({
                                 sku: dosage.sku,
-                                quantity: dosage.quantity,
-                                frequency: dosage.frequency
+                                quantity: dosage.quantity
                             }))
                         }
                     }))
@@ -190,8 +189,7 @@ async function syncRemoteToLocal() {
                 dosages: {
                     create: prescription.dosages.map(dosage => ({
                         sku: dosage.sku,
-                        quantity: dosage.quantity,
-                        frequency: dosage.frequency
+                        quantity: dosage.quantity
                     }))
                 }
             }

@@ -63,7 +63,6 @@ app.use('/api/suppliers', suppRoutes);
 app.use('/api/prescriptions', prescriptionRoute);
 app.use('/api/purchases', purchaseRoute);
 app.use('/api/logs', logRoutes);
-
 app.get('/api/sync', async (req, res) => {
   try{
     await syncService.syncService()
