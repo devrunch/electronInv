@@ -41,25 +41,16 @@ async function ImageGenerator(prescription, fileName) {
 
                 <h2 style="margin-top: 20px;">नुस्खा (Prescription)</h2>
                 <div style="display: flex; justify-content: space-between;">
-                <img src="https://aditya.outlfy.com/static/images/pres.jpg"  width="250px">
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th>दवा</th>
-                      <th>मात्रा</th>
-                      <th>विधि</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    ${prescription.dosages.map(medicine => `
-                    <tr>
-                      <td>${medicine.inventory.name}</td>
-                      <td>${medicine.quantity}</td>
-                      <td>${medicine.inventory.directions || ''}</td>
-                    </tr>
-                    `).join('')}
-                  </tbody>
-                </table>
+                <img src="https://aditya.outlfy.com/static/images/pres.jpg"  width="50%">
+                <div style="width: 50%; font-size: 16px;">
+                ${prescription.dosages.map(medicine => `
+                    <div style="margin-bottom: 15px; border-left: 3px solid #065f46; padding-left: 10px;">
+                        <p style="font-weight: bold; color: #065f46;">${medicine.inventory.name}</p>
+                        <p style="color: #666; font-style: italic;">${medicine.inventory.directions || ''}</p>
+                    </div>
+                `).join('')}
+                </div>
+
                 </div>
 
                 <p style="margin-top: 10px;">चिकित्सक: <strong>${prescription.doctor}</strong></p>
@@ -96,3 +87,4 @@ async function ImageGenerator(prescription, fileName) {
 
 // Export the new function
 module.exports = { ImageGenerator };
+
