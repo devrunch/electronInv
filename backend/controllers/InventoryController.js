@@ -18,6 +18,9 @@ module.exports = {
       return res.status(400).json({ error: 'All fields are required' });
     }
 
+    // Trim the SKU
+    sku = sku.trim();
+
     const skuCheck = await prisma.inventory.findUnique({ where: { sku } });
     if (skuCheck) {
       return res.status(400).json({ error: 'SKU already exists' });
@@ -60,6 +63,9 @@ module.exports = {
       return res.status(400).json({ error: 'Quantity is required' });
     }
 
+    // Trim the ID
+    const trimmedId = id.trim();
+
     quantity = parseInt(quantity);
     lowerThreshold = parseInt(lowerThreshold);
     upperThreshold = parseInt(upperThreshold);
@@ -71,7 +77,7 @@ module.exports = {
 
     try {
       const updatedItem = await prisma.inventory.update({
-        where: { sku: id },
+        where: { sku: trimmedId },
         data: { name, quantity, lowerThreshold, upperThreshold, price, directions },
       });
 
@@ -93,9 +99,11 @@ module.exports = {
 
   async deleteInventory(req, res) {
     const { id } = req.params;
+    // Trim the ID
+    const trimmedId = id.trim();
 
     try {
-      await prisma.inventory.delete({ where: { sku: id } });
+      await prisma.inventory.delete({ where: { sku: trimmedId } });
       res.json({ message: 'Item deleted successfully' });
     } catch (err) {
       console.log(err);
@@ -142,7 +150,7 @@ module.exports = {
   async quickSearch(req, res) {
     try {
       const { q } = req.query;
-      const searchTerm = q.toLowerCase();
+      const searchTerm = q.trim().toLowerCase();
       console.log(searchTerm)
       const inventory = await prisma.inventory.findMany({
         where: {

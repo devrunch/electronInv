@@ -35,7 +35,7 @@ class PrescriptionController {
         const { id } = req.params;
         try {
             const prescription = await prisma.prescription.findUnique({
-                where: { id: parseInt(id) },
+                where: { id: parseInt(id.trim()) },
                 include: {
                     patient: true,
                     dosages: {
@@ -60,8 +60,15 @@ class PrescriptionController {
 
     static async createPrescription(req, res) {
         const { patientId, dosages,  startDate, endDate, doctor,disease } = req.body;
-        // Remove name field from each dosage object
-        const sanitizedDosages = dosages.map(({ name, ...rest }) => rest);
+        // Trim patientId
+        const trimmedPatientId = parseInt(patientId.toString().trim());
+        
+        // Remove name field from each dosage object and trim SKUs
+        const sanitizedDosages = dosages.map(({ name, ...rest }) => ({
+            ...rest,
+            sku: rest.sku.trim()
+        }));
+        
         for (const item of sanitizedDosages) {
             const inv = await prisma.inventory.findUnique({
                 where: { sku: item.sku },
@@ -76,7 +83,7 @@ class PrescriptionController {
         try {
             let newPrescription = await prisma.prescription.create({
                 data: {
-                    patientId,
+                    patientId: trimmedPatientId,
                     startDate: new Date(startDate),
                     endDate: new Date(endDate),
                     doctor,
@@ -139,7 +146,7 @@ class PrescriptionController {
     static async sendPrescriptionWhatsapp(req, res) {
         const { id } = req.params;
         const prescription = await prisma.prescription.findUnique({
-            where: { id: parseInt(id) },
+            where: { id: parseInt(id.trim()) },
             include: {
                 patient: true,
             },
@@ -158,16 +165,23 @@ class PrescriptionController {
         const { id } = req.params;
         const { dosage, startDate, endDate, doctor } = req.body;
         console.log(dosage);
+        
+        // Trim SKUs in dosage objects
+        const trimmedDosage = dosage.map(item => ({
+            ...item,
+            sku: item.sku.trim()
+        }));
+        
         try {
             const updatedPrescription = await prisma.prescription.update({
-                where: { id: parseInt(id) },
+                where: { id: parseInt(id.trim()) },
                 data: {
                     startDate: new Date(startDate),
                     endDate: new Date(endDate),
                     doctor,
                     dosages: {
                         deleteMany: {}, // Delete existing dosages
-                        create: dosage, // Create new dosages
+                        create: trimmedDosage, // Create new dosages
                     },
                 },
             });
@@ -182,7 +196,7 @@ class PrescriptionController {
         const { id } = req.params;
         try {
             await prisma.prescription.delete({
-                where: { id: parseInt(id) },
+                where: { id: parseInt(id.trim()) },
             });
             res.status(204).send();
         } catch (error) {
@@ -195,7 +209,7 @@ class PrescriptionController {
         const { id } = req.params;
         try {
             const prescription = await prisma.prescription.findUnique({
-                where: { id: parseInt(id) },
+                where: { id: parseInt(id.trim()) },
                 include: {
                     dosages: true,
                 },
@@ -208,7 +222,7 @@ class PrescriptionController {
             // Increment the quantity of inventory items used in skus
             for (const item of prescription.dosage) {
                 await prisma.inventory.update({
-                    where: { sku: item.sku },
+                    where: { sku: item.sku.trim() },
                     data: {
                         quantity: {
                             increment: item.quantity,
@@ -218,7 +232,7 @@ class PrescriptionController {
             }
 
             await prisma.prescription.delete({
-                where: { id: parseInt(id) },
+                where: { id: parseInt(id.trim()) },
             });
 
             res.status(204).send();
@@ -232,7 +246,7 @@ class PrescriptionController {
         const { id } = req.params;
         try {
             const prescription = await prisma.prescription.findUnique({
-                where: { id: parseInt(id) },
+                where: { id: parseInt(id.trim()) },
                 include: {
                     patient: true,
                 },

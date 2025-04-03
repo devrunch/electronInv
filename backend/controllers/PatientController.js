@@ -24,8 +24,11 @@ module.exports = {
       return res.status(400).json({ error: 'All fields are required' });
     }
 
+    // Trim contact info
+    const trimmedContactInfo = contactInfo.trim();
+
     const phoneCheck = await prisma.patient.findFirst({
-      where: { contactInfo: contactInfo },
+      where: { contactInfo: trimmedContactInfo },
     });
     if (phoneCheck) {
       return res.status(400).json({ error: 'Phone number already exists' });
@@ -38,7 +41,7 @@ module.exports = {
           lastName,
           dob: new Date(dob),
           gender,
-          contactInfo,
+          contactInfo: trimmedContactInfo,
           emergencyContact
 
         },
@@ -53,7 +56,7 @@ module.exports = {
     const { id } = req.params;
     try {
       const patient = await prisma.patient.findUnique({
-        where: { id: parseInt(id) },
+        where: { id: parseInt(id.trim()) },
         include: {
           prescriptions: true,
         },
@@ -70,12 +73,22 @@ module.exports = {
 
   async updatePatient(req, res) {
     const { id } = req.params;
-    const { firstName, lastName, contactInfo, emergencyContact,medicalHistory } = req.body;
+    const { firstName, lastName, contactInfo, emergencyContact, medicalHistory } = req.body;
+
+    // Trim contact info and ID
+    const trimmedContactInfo = contactInfo ? contactInfo.trim() : contactInfo;
+    const trimmedId = id.trim();
 
     try {
       const updatedPatient = await prisma.patient.update({
-        where: { id: parseInt(id) },
-        data: { firstName, lastName, contactInfo, emergencyContact,medicalHistory },
+        where: { id: parseInt(trimmedId) },
+        data: { 
+          firstName, 
+          lastName, 
+          contactInfo: trimmedContactInfo, 
+          emergencyContact, 
+          medicalHistory 
+        },
       });
       res.json(updatedPatient);
     } catch (err) {
@@ -86,9 +99,11 @@ module.exports = {
 
   async deletePatient(req, res) {
     const { id } = req.params;
+    // Trim ID
+    const trimmedId = id.trim();
 
     try {
-      await prisma.patient.delete({ where: { id: parseInt(id) } });
+      await prisma.patient.delete({ where: { id: parseInt(trimmedId) } });
       res.json({ message: 'Patient deleted successfully' });
     } catch (err) {
       res.status(500).json({ error: 'Server error' });
@@ -98,7 +113,7 @@ module.exports = {
   async quickSearch(req, res) {
    try{
     const {q} = req.query;
-    const searchTerm = q.toLowerCase();
+    const searchTerm = q.trim().toLowerCase();
     const patients = await prisma.patient.findMany({
       where: {
         OR: [

@@ -16,7 +16,7 @@ class SupplierController {
         const { id } = req.params;
         try {
             const supplier = await prisma.supplier.findUnique({
-                where: { id: parseInt(id) },
+                where: { id: parseInt(id.trim()) },
             });
             if (supplier) {
                 res.status(200).json(supplier);
@@ -30,9 +30,18 @@ class SupplierController {
 
     static async createSupplier(req, res) {
         const { name, contact, email, address } = req.body;
+        
+        // Trim email
+        const trimmedEmail = email.trim();
+        
         try {
             const newSupplier = await prisma.supplier.create({
-                data: { name, contact, email, address },
+                data: { 
+                    name, 
+                    contact, 
+                    email: trimmedEmail, 
+                    address 
+                },
             });
             res.status(201).json(newSupplier);
         } catch (error) {
@@ -43,10 +52,20 @@ class SupplierController {
     static async updateSupplier(req, res) {
         const { id } = req.params;
         const { name, contact, email, address } = req.body;
+        
+        // Trim ID and email
+        const trimmedId = id.trim();
+        const trimmedEmail = email ? email.trim() : email;
+        
         try {
             const updatedSupplier = await prisma.supplier.update({
-                where: { id: parseInt(id) },
-                data: { name, contact, email, address },
+                where: { id: parseInt(trimmedId) },
+                data: { 
+                    name, 
+                    contact, 
+                    email: trimmedEmail, 
+                    address 
+                },
             });
             res.status(200).json(updatedSupplier);
         } catch (error) {
@@ -56,9 +75,13 @@ class SupplierController {
 
     static async deleteSupplier(req, res) {
         const { id } = req.params;
+        
+        // Trim ID
+        const trimmedId = id.trim();
+        
         try {
             await prisma.supplier.delete({
-                where: { id: parseInt(id) },
+                where: { id: parseInt(trimmedId) },
             });
             res.status(204).send();
         } catch (error) {
