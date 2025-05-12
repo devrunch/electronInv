@@ -157,7 +157,7 @@ class PrescriptionController {
         await sendPrescriptionViaWhatsapp(
             prescription.patient.contactInfo,
             [prescription.patient.firstName],
-            `https://aditya.outlfy.com/static/images/prescription_${prescription.patient.firstName}_${prescription.prescriptionID}.png`)
+            `https://aditya.outlfy.com/static/images/prescription_${prescription.patient.firstName}_${prescription.prescriptionID}.pdf`)
         res.status(200).json({ message: 'Prescription sent successfully' });
     }
 
@@ -261,7 +261,7 @@ class PrescriptionController {
             }
 
             // Get the image buffer from the saved file
-            const filePath = `uploads/images/prescription_${prescription.patient.firstName}_${prescription.prescriptionID}.png`;
+            const filePath = `uploads/images/prescription_${prescription.patient.firstName}_${prescription.prescriptionID}.pdf`;
             const buffer = await fs.promises.readFile(filePath);
 
 
@@ -275,7 +275,7 @@ class PrescriptionController {
                     <p>Please find your prescription attached to this email.</p>
                 `,
                 attachments: [{
-                    filename: `prescription_${new Date().toLocaleDateString()}.png`,
+                    filename: `prescription_${new Date().toLocaleDateString()}.pdf`,
                     content: buffer
                 }]
             };
