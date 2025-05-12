@@ -1,6 +1,6 @@
 const { PrismaClient } = require('../../prisma/generated/remote');
 const nodemailer = require('nodemailer');
-const { ImageGenerator } = require('../utils/prescriptionHTML');
+const { PdfGenerator } = require('../utils/prescriptionHTML');
 const { sendPrescriptionViaWhatsapp } = require('../utils/prescriptionSender');
 const prisma = new PrismaClient();
 const fs = require('fs');
@@ -130,12 +130,12 @@ class PrescriptionController {
             }
 
             // Changed from PdfGenerator to ImageGenerator and .pdf to .png
-            const imageFileName = `prescription_${newPrescription.patient.firstName}_${newPrescription.prescriptionID}.png`;
-            await ImageGenerator(newPrescription, imageFileName);
+            const imageFileName = `prescription_${newPrescription.patient.firstName}_${newPrescription.prescriptionID}.pdf`;
+            await PdfGenerator(newPrescription, imageFileName);
             await sendPrescriptionViaWhatsapp(
                 newPrescription.patient.contactInfo,
                 [newPrescription.patient.firstName],
-                `https://aditya.outlfy.com/static/images/prescription_${newPrescription.patient.firstName}_${newPrescription.prescriptionID}.png`)
+                `https://aditya.outlfy.com/static/images/prescription_${newPrescription.patient.firstName}_${newPrescription.prescriptionID}.pdf`)
             res.status(201).json(newPrescription);
         } catch (error) {
             console.log(error);
