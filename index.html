@@ -1,9 +1,4 @@
-const { savePdfToUploads } = require('./htmlToPdf');
-
-async function PdfGenerator(prescription, fileName) {
-    console.log(prescription.patient.firstName);
-     const html = `
-        <html>
+<html>
   <head>
     <title>Prescription</title>
     <style>
@@ -162,56 +157,50 @@ async function PdfGenerator(prescription, fileName) {
           <div style="width: 33%; font-size: 16px">
             <div style="margin-bottom: 10px; background-color: #470000; color: white; padding: 5px; font-weight: bold">आपके रोग</div>
             ${prescription.disease.split(',').map(disease => `
-            <p style="margin-bottom: 2px;">
+            <p style="margin-bottom: 5px;">
               <span class="red-circle"></span>
               <strong>${disease}</strong>
             </p>
             `).join('')}
           </div>
-          <div style="width: 33%;">
-          <div style="margin-bottom: 10px; color: #fff; background-color: #470000; padding: 5px; font-weight: bold">औषधियाँ</div>
+          <div style="width: 33%; text-align: center">
+            <img src="https://aditya.outlfy.com/static/images/pres.jpg" width="70%" />
+          </div>
+          <div style="width: 33%; font-size: 16px">
+            <h3 style="margin-bottom: 10px; color: #c80a0a">औषधियाँ</h3>
             ${prescription.dosages.map(medicine => `
             <div
               style="
-                margin-bottom: 5px;
+                margin-bottom: 15px;
                 padding-left: 10px;
-                display: flex;
               "
             >
-            <div>
-            <span class="red-circle"></span>
-            </div>
-            <div>
-            <p style="font-weight: bold;">
-            ${medicine.inventory.name}
-            </p>
-            <p style="color: #666; font-style: italic">
-            ${medicine.inventory.directions || ''}
-            </p>
-            <p style="color: #666; font-style: italic">
-            ${medicine.quantity} 
-            </p>
-            </div>
+              <p style="font-weight: bold;">
+                ${medicine.inventory.name}
+              </p>
+              <p style="color: #666; font-style: italic">
+                ${medicine.inventory.directions || ''}
+              </p>
+              <p style="color: #666; font-style: italic">
+                ${medicine.quantity} 
+              </p>
             </div>
             `).join('')}
-            <img src="https://aditya.outlfy.com/static/images/pres.jpg" width="90%" />
-          </div>
-          <div style="width: 33%; font-size: 16px">
-            
             <h3
               style="
                 margin-bottom: 10px;
+                margin-top: 20px;
                 color: rgb(95, 6, 6);
-                font-size: 15px;
               "
             >
-              औषधि सेवन के समय निम्न बातों का ध्यान रखें :-
+              विशेष रोग हेतु ...
             </h3>
-            <ul class="remedy-list" style="font-size: 12px">
+            <ul class="remedy-list">
               <li class="remedy-item">
                 <span class="red-square"></span>
                 <div class="remedy-text">
-                  सभी औषधियाँ हर्बल है, इनके प्रायः साईड इफेक्ट नहीं होते।
+                  चूना गेहूं के दाने के बराबर पानी या दूध में घोलकर दिन में एक
+                  बार उपयोग करें।
                 </div>
               </li>
 
@@ -226,27 +215,27 @@ async function PdfGenerator(prescription, fileName) {
               <li class="remedy-item">
                 <span class="red-square"></span>
                 <div class="remedy-text">
-                  मुँह में छाले, शरीर में सूजन, पेट में दर्द या गर्मी, कब्ज़ या दस्त, पेट का फूलना या वायु बनना तथा त्वचा में जलन, चकते व खुजली होने की स्थिति में औषधि का सेवन सौंफ के पानी के साथ करें अथवा चिकित्सक से फोन में सम्पर्क करें।
+                  एल.एस. जैल का उपयोग ऊपर से नीचे की ओर हल्के हाथों से करें।
                 </div>
               </li>
 
-
-            </ul>
-            <h3
-              style="
-                margin-bottom: 10px;
-                margin-top: 20px;
-                font-size: 15px;
-                color: rgb(95, 6, 6);
-              "
-            >
-              पीड़ा की स्थिति में :-
-            </h3>
-            <ul class="remedy-list" style="font-size: 12px">
               <li class="remedy-item">
                 <span class="red-square"></span>
                 <div class="remedy-text">
-                  चिकित्सा के दौरान रोगी को बीच-बीच में 2 से 3 दिनों तक दर्द आ सकता है, क्योंकि नसों में रक्त का प्रवाह नियमित (Repair) होता है, हमारी चिकित्सा में पेन-किलर का उपयोग न के बराबर है, यदि आवश्यक लगे तो आप बाहरी पेन-किलर का उपयोग कर सकते हैं।
+                  मुंह में छाले, शरीर में सूजन, पेट में दर्द, पेट में गैस बनने
+                  की स्थिति में तथा त्वचा में चकत्ते व खुजली होने की स्थिति में
+                  औषधि का प्रयोग रोक कर चिकित्सक से सम्पर्क करें।
+                  <div class="note">
+                    (उपरोक्त स्थिति आपकी पाचन क्षमता की कमजोरी दर्शाती है)
+                  </div>
+                </div>
+              </li>
+
+              <li class="remedy-item">
+                <span class="red-square"></span>
+                <div class="remedy-text">
+                  हमारे यहाँ नसों के रोगों का निवारण बिना औषधि के स्पर्श मात्र
+                  एवं घरेलु उपचार द्वारा भी संभव है।
                 </div>
               </li>
             </ul>
@@ -265,64 +254,10 @@ async function PdfGenerator(prescription, fileName) {
       </div>
 
       <div class="footer">
-        <p>■ 3 सिटिंग में 80% आराम न होने पर चिकित्सक से प्राकृतिक श्री विधि चिकित्सा का आग्रह करें.</p>
+        <p>■ हमारे यहाँ नसों के रोगों का निवारण बिना औषधि के स्पर्श विधि व अनेक विशेष विधि द्वारा संभव है</p>
+        <p>■ सभी औषधि हर्बल है</p>
         <p>■ वैज्ञानिक कार्यवाही के लिए मान्य नहीं है</p>
       </div>
     </div>
-    <img src="https://aditya.outlfy.com/static/images/PP2.jpg" alt="footer" style="width: 100%">
   </body>
 </html>
-
-    `;
-
-    try {
-        console.log('Starting image generation...');
-        
-        // Save the image
-        const imagePath = await savePdfToUploads(html, fileName);
-        
-        console.log('✅ Pdf generated successfully!');
-        console.log(`Saved to: ${imagePath}`);
-        
-        return { success: true, path: imagePath };
-    } catch (error) {
-        console.error('❌ Error generating pdf:', error);
-        return { success: false, error };
-    }
-}
-
-
-let mockPrescription = {
-    patient: {
-        firstName: 'John',
-        lastName: 'Doe',
-        dob: '1990-01-01',
-        contactInfo: '1234567890'
-    },
-    dosages: [
-        {
-            inventory: {
-                name: 'Paracetamol',
-            },
-            dosage: '500mg',
-            quantity: '2 times a day',
-            duration: '10 days'
-        },
-        {
-            inventory: {
-                name: 'Aspirin',
-            },
-            dosage: '100mg',
-            quantity: '3 times a day',
-            duration: '7 days'
-        }
-    ],
-    disease: 'Fever,Cold',
-    startDate: '2025-05-12',
-    endDate: '2025-05-19',
-    doctor: 'Dr. Smith'
-}
-
-
-module.exports = { PdfGenerator };
-

@@ -34,6 +34,8 @@ async function sendPrescriptionViaWhatsapp(phoneNumber, templateParams, mediaUrl
     });
     
     if (!response.ok) {
+      console.error('Error sending prescription:', response.statusText);
+      console.error('Response:', await response.text());
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
     
